@@ -1,0 +1,139 @@
+@startuml
+
+class User
+User <|-- Restaurant
+User <|-- Driver
+User <|-- Customer
+User <|-- Admin
+UserResource <|-- AdminResource
+
+
+class Food {
+    -id: String
+    -name: String
+    -price: Double
+    -description: String
+    -imageUrl: String
+    -restaurantId: String
+    -rating: int
+    -date: LocalDate
+}
+
+class FoodResource{
+    -restTemplate: RestTemplate
+
+    +getAllFoods() : List<Food>
+    +getFoodById(id: String): Food
+    +getAllFoodsOfRestaurant(id: String): List<Food>
+    +addNew(food: Food): Food
+    +deleteFood(id: String): Food
+    +getFoodsByIds(ids: List<String>): List<Food>
+}
+
+Food ..> FoodResource
+Admin ..> AdminResource
+
+class AdminResource {
+
+    getRestaurantById(users: List<User>, id: String): User
+    getRestaurantsWithFoodCountAndSortByRating(users, foods, foodCount): List<User>
+    getSortedRestaurantByBuyingHistory(uses, orders, customerId): List<User>
+    getAllFoodsBasedOnPriceAndRestaurantRatings(foods, restaurants, priceRange, rating): List<Food>
+    getMostCanceledUsers(orders, users, rejectedCount): List<User>
+    getAllTopDrivers(orders, drivers): List<User>
+    getAllNearestRestaurants(restaurants, lat, lng, radius): List<User>
+    getHighlyRatedFoods(food, date): List<Food>
+    getLowRatedRestaurants(restaurants, foods, min_rate, no_food): List<User>
+    getAllDriversWithXDeliveriesFromARestaurant(drivers, orders, restaurantId, no_of_deliveries): List<User>
+    topRestaurantsInTown(orders, foods): List<String>
+    topFoodsForRestaurant(foods, orders): List<String>
+    getAllFoodsForPriceRange(foods): List<String>
+    getAllActiveOrders(orders): List<Order>
+    getAllFoodsBasedOnPriceAndRestaurantRating(foods, rating): List<Food>
+}
+
+
+class OrderResource{
+    -restTemplate: RestTemplate
+    +getAll(): List<Order>
+    +getById(id: String): Order
+    +addNewOrder(order: Order): Order
+    +getAllOrdersOfCustomer(id: String): List<Order>
+    +getAllOrdersOfRestaurant(id: String): List<Order>
+    +getActiveOrdersOfCustomer(id: String): List<Order>
+    +getPendingOrdersOfRestaurant(id: String): List<Order>
+    +geActiveOrdersOfRestaurant(id: String): List<Order>
+    +acceptOrder(order: Order): Order
+    +rejectOrderByRestaurant(order: Order): Order
+    +getAllOrdersWaitingPickup():List<Order>
+    +getAllOrdersOfDriver():List<Order>
+    +getActiveOrderOfDriver(id: String): List<Order>
+    +selectPickUp(orderId:String, driverId: String): Order
+    +pickUp(orderId: String): Order
+    +deliver(orderId: String): Order
+}
+
+class UserResource {
+    -restTemplate: RestTemplate
+
+    +getAllUsers():List<User>
+    +getUserById(): User
+    +getUserByUsername(): User
+    +getAllRestaurants(): List<User>
+    +getAllDrivers():List<User>
+    +getAllCustomers():List<User>
+    +updateUserInfo(user: User, username: String)
+    +getUsersByIds(ids: List<String>)
+}
+
+User ..> UserResource
+
+Order ..> OrderResource
+
+class User {
+    -id: String
+    -username: String
+    -password: String
+    -firstName: String
+    -lastName: String
+    -email: String
+    -phoneNumber: String
+    -address: String
+    -role: UserRole
+    -lat: double
+    -lng: double
+}
+
+class Order {
+    id: String
+    customerId: String
+    restaurantId: String
+    foods: List<OrderEntity>
+    driverId: String
+    orderState: OrderState
+    modifiedBy: String
+    totalPrice: String
+}
+
+class OrderEntity{
+    foodId: String
+    quantity: int
+}
+Order *-- OrderEntity
+enum UserRole {
+    ADMIN
+    CUSTOMER
+    RESTAURANT
+    DRIVER
+}
+
+enum OrderState{
+    PENDING
+    ACCEPTED
+    REJECTED
+    PICKEDUP
+    DELIVERED
+}
+
+
+@enduml
